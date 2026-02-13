@@ -1,6 +1,16 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend;
+
+function getResendClient() {
+  if (!resend) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY no configurada');
+    }
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 const FROM_EMAIL = process.env.EMAIL_FROM || 'onboarding@resend.dev';
 const FRONTEND_URL = process.env.FRONTEND_URL_PROD || 'https://nadir-agenda.vercel.app';
@@ -10,7 +20,7 @@ async function sendVerificationEmail(email, token) {
   const verifyUrl = `${FRONTEND_URL}/verify-email?token=${token}`;
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Verifica tu cuenta - Gestor de Avisos',
@@ -106,7 +116,7 @@ async function sendPasswordResetEmail(email, token) {
   const resetUrl = `${FRONTEND_URL}/reset-password?token=${token}`;
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Recupera tu contraseña - Gestor de Avisos',
