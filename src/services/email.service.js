@@ -13,7 +13,9 @@ function getResendClient() {
 }
 
 const FROM_EMAIL = process.env.EMAIL_FROM || 'onboarding@resend.dev';
-const FRONTEND_URL = process.env.FRONTEND_URL_PROD || 'https://nadir-agenda.vercel.app';
+const FRONTEND_URL = process.env.NODE_ENV === 'production' 
+  ? process.env.FRONTEND_URL_PROD 
+  : process.env.FRONTEND_URL_LOCAL || 'http://localhost:4321';
 
 // Enviar email de verificación
 async function sendVerificationEmail(email, token) {
